@@ -7,6 +7,7 @@ constexpr int moveIncrement = 10;
 ////////////////////////////
 
 Robot::Robot() {
+    robotFacingDirection = RobotFacingDirection::FRONT;
     initSprite();
 }
 
@@ -25,29 +26,40 @@ sf::Sprite& Robot::getRobotSprite() {
 ///PUBLIC METHODS///
 ////////////////////
 
-void Robot::updateSprite(const RobotDirection direction, bool canMove) {
-    switch (direction) {
-        case RobotDirection::RIGHT: {
+RobotFacingDirection Robot::getCurrentFacingDirection() {
+    return robotFacingDirection;
+}
+
+void Robot::move(RobotMovingDirection movingDirection, bool shouldMove) {
+    switch (movingDirection) {
+        case RobotMovingDirection::RIGHT: {
+            robotFacingDirection = RobotFacingDirection::RIGHT;
             robotSprite.setTexture(robotRightTexture);
             break;
         }
-        case RobotDirection::LEFT: {
+        case RobotMovingDirection::LEFT: {
+            robotFacingDirection = RobotFacingDirection::LEFT;
             robotSprite.setTexture(robotLeftTexture);
             break;
         }
-        case RobotDirection::UP: {
+        case RobotMovingDirection::UP: {
+            robotFacingDirection = RobotFacingDirection::BACK;
             robotSprite.setTexture(robotBackTexture);
             break;
         }
-        case RobotDirection::DOWN: {
+        case RobotMovingDirection::DOWN: {
+            robotFacingDirection = RobotFacingDirection::FRONT;
             robotSprite.setTexture(robotFrontTexture);
             break;
         }
     }
 
-    if (canMove) {
-        move(direction);
+    if (shouldMove) {
+        move(movingDirection);
     }
+}
+
+void Robot::pickUpItem(Item &item) {
 }
 
 /////////////////////
@@ -73,22 +85,26 @@ void Robot::initSprite() {
     robotSprite.setPosition(0, 0);
 }
 
-void Robot::move(const RobotDirection direction) {
-    switch (direction) {
-        case RobotDirection::RIGHT: {
-            robotSprite.setPosition(robotSprite.getPosition().x + moveIncrement, robotSprite.getPosition().y);
+void Robot::move(const RobotMovingDirection movingDirection) {
+    switch (movingDirection) {
+        case RobotMovingDirection::RIGHT: {
+            //robotSprite.setPosition(robotSprite.getPosition().x + moveIncrement, robotSprite.getPosition().y);
+            robotSprite.move(moveIncrement, 0);
             break;
         }
-        case RobotDirection::LEFT: {
-            robotSprite.setPosition(robotSprite.getPosition().x - moveIncrement, robotSprite.getPosition().y);
+        case RobotMovingDirection::LEFT: {
+            //robotSprite.setPosition(robotSprite.getPosition().x - moveIncrement, robotSprite.getPosition().y);
+            robotSprite.move(-moveIncrement, 0);
             break;
         }
-        case RobotDirection::UP: {
-            robotSprite.setPosition(robotSprite.getPosition().x, robotSprite.getPosition().y - moveIncrement);
+        case RobotMovingDirection::UP: {
+            //robotSprite.setPosition(robotSprite.getPosition().x, robotSprite.getPosition().y - moveIncrement);
+            robotSprite.move(0, -moveIncrement);
             break;
         }
-        case RobotDirection::DOWN: {
-            robotSprite.setPosition(robotSprite.getPosition().x, robotSprite.getPosition().y + moveIncrement);
+        case RobotMovingDirection::DOWN: {
+            //robotSprite.setPosition(robotSprite.getPosition().x, robotSprite.getPosition().y + moveIncrement);
+            robotSprite.move(0, moveIncrement);
             break;
         }
     }

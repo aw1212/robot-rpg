@@ -3,8 +3,16 @@
 
 #include <SFML/Graphics.hpp>
 #include "vector"
+#include "item.h"
 
-enum class RobotDirection {
+enum class RobotFacingDirection {
+    LEFT,
+    RIGHT,
+    FRONT,
+    BACK
+};
+
+enum class RobotMovingDirection {
     LEFT,
     RIGHT,
     UP,
@@ -15,9 +23,10 @@ class Robot {
 private:
     sf::Texture robotFrontTexture, robotBackTexture, robotLeftTexture, robotRightTexture;
     sf::Sprite robotSprite;
+    RobotFacingDirection robotFacingDirection;
     // Functions
     void initSprite();
-    void move(RobotDirection direction);
+    void move(RobotMovingDirection movingDirection);
 public:
     // Constructors/Destructors
     Robot();
@@ -25,7 +34,9 @@ public:
     // Getters
     sf::Sprite& getRobotSprite();
     // Functions
-    void updateSprite(RobotDirection direction, bool canMove);
+    RobotFacingDirection getCurrentFacingDirection();
+    void move(RobotMovingDirection movingDirection, bool shouldMove);
+    void pickUpItem(Item& item);
 };
 
 #endif //ROBOTRPG_ROBOT_H

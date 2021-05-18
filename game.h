@@ -23,9 +23,12 @@ private:
     void initItems();
     void pollEvents();
     void updateMousePosition();
-    void updateRobot(RobotDirection direction);
-    void updateItem();
-    static bool canMove();
+    void updateRobot(RobotMovingDirection movingDirection);
+    Item* clickedOnItem();
+    bool isItemClickable(Item& item);
+    void updateItem(Item* item);
+    bool shouldRobotMove(RobotMovingDirection movingDirection);
+    bool shouldUpdateRobotPosition(RobotMovingDirection movingDirection);
 public:
     // Constructors/Destructors
     Game();
