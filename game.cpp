@@ -64,25 +64,27 @@ void Game::initWindow() {
 void Game::initItems() {
     Item* redShrine = new Item(ItemType::RED_SHRINE,
                                sf::Vector2f(650, 550),
-                               sf::Vector2(0.25f, 0.5f),
+                               sf::Vector2(0.25f, 0.25f),
                                true,
                                false);
 
     Item* blueRectangle = new Item(ItemType::BLUE_RECTANGLE,
-                               sf::Vector2f(200, 800),
-                               sf::Vector2(0.25f, 0.5f),
+                               sf::Vector2f(200, 1000),
+                               sf::Vector2(0.25f, 0.25f),
                                    true,
                                true);
 
     Item* completedRedShrine = new Item(ItemType::RED_SHRINE_COMPLETE,
                                         sf::Vector2f(650, 550),
-                                        sf::Vector2(0.25f, 0.5f),
+                                        sf::Vector2(0.25f, 0.25f),
                                         false,
                                         false);
 
     items.push_back(redShrine);
     items.push_back(blueRectangle);
     items.push_back(completedRedShrine);
+
+    itemMap.emplace(redShrine, completedRedShrine);
 }
 
 void Game::pollEvents() {
@@ -185,20 +187,23 @@ bool Game::shouldRobotMove(const RobotMovingDirection movingDirection) {
 
     // If robot is near an item, it cannot move into it
     for (Item* item : items) {
-        sf::Sprite itemSprite = item->getItemSprite();
-        const sf::Rect<float> itemGlobalBounds = itemSprite.getGlobalBounds();
 
-        //itemSprite.getGlobalBounds().left = 280
-        //itemSprite.getGlobalBounds().top = 180
-        //itemSprite.getGlobalBounds().height = 256
-        //itemSprite.getGlobalBounds().width = 128
+        if (item->isVisible()) {
+            sf::Sprite itemSprite = item->getItemSprite();
+            const sf::Rect<float> itemGlobalBounds = itemSprite.getGlobalBounds();
 
-        //TODO this is utter shite need to update
-        Robot movedRobot = robot;
-        movedRobot.move(movingDirection);
+            //itemSprite.getGlobalBounds().left = 280
+            //itemSprite.getGlobalBounds().top = 180
+            //itemSprite.getGlobalBounds().height = 256
+            //itemSprite.getGlobalBounds().width = 128
 
-        if (movedRobot.getRobotSprite().getGlobalBounds().intersects(itemGlobalBounds)) {
-            return false;
+            //TODO this is utter shite need to update
+            Robot movedRobot = robot;
+            movedRobot.move(movingDirection);
+
+            if (movedRobot.getRobotSprite().getGlobalBounds().intersects(itemGlobalBounds)) {
+                return false;
+            }
         }
     }
 
@@ -220,8 +225,6 @@ Item* Game::clickedOnItem() {
     // Determine if any clickable (visible and in-range) item was clicked on
     for (auto item : items) {
         if (isItemClickable(*item)) {
-            std::cout << "I'M CLICKABLE" << std::endl;
-
             const sf::Rect<float> itemBounds = item->getItemSprite().getGlobalBounds();
             if (itemBounds.contains(mousePosView)) {
                 return item;
@@ -232,18 +235,69 @@ Item* Game::clickedOnItem() {
     return nullptr;
 }
 
+bool nearIntersect(const sf::Rect<float>& rectangle1, sf::Rect<float> rectangle2);
+
 bool Game::isItemClickable(Item& item) {
-    return item.isVisible() &&
-        robot.getRobotSprite().getGlobalBounds().intersects(item.getItemSprite().getGlobalBounds());
+    if (!item.isVisible()) {
+        return false;
+    }
+
+    return nearIntersect(robot.getRobotSprite().getGlobalBounds(), item.getItemSprite().getGlobalBounds());
+}
+
+bool nearIntersect(const sf::Rect<float>& rectangle1, sf::Rect<float> rectangle2) {
+    // Rectangles with negative dimensions are allowed, so we must handle them correctly
+
+    // Compute the min and max of the first rectangle on both axes
+    float r1MinX = std::min(rectangle1.left, static_cast<float>(rectangle1.left + rectangle1.width));
+    float r1MaxX = std::max(rectangle1.left, static_cast<float>(rectangle1.left + rectangle1.width));
+    float r1MinY = std::min(rectangle1.top, static_cast<float>(rectangle1.top + rectangle1.height));
+    float r1MaxY = std::max(rectangle1.top, static_cast<float>(rectangle1.top + rectangle1.height));
+
+    // Compute the min and max of the second rectangle on both axes
+    float r2MinX = std::min(rectangle2.left, static_cast<float>(rectangle2.left + rectangle2.width));
+    float r2MaxX = std::max(rectangle2.left, static_cast<float>(rectangle2.left + rectangle2.width));
+    float r2MinY = std::min(rectangle2.top, static_cast<float>(rectangle2.top + rectangle2.height));
+    float r2MaxY = std::max(rectangle2.top, static_cast<float>(rectangle2.top + rectangle2.height));
+
+    // Compute the intersection boundaries
+    float interLeft = std::max(r1MinX, r2MinX);
+    float interTop = std::max(r1MinY, r2MinY);
+    float interRight = std::min(r1MaxX, r2MaxX) + 20;
+    float interBottom = std::min(r1MaxY, r2MaxY) + 20;
+
+    // If the intersection is valid (positive non zero area), then there is an intersection
+    if ((interLeft < interRight) && (interTop < interBottom)) {
+        return true;
+    }
+
+    return false;
 }
 
 void Game::updateItem(Item* item) {
     // If the clicked on item is carriable (a shrine piece) then pick it up
     if (item->canBeCarried()) {
         robot.pickUpItem(*item);
+        item->setVisible(false);
     } else {
         // If the clicked on item is a shrine and we are holding the correct piece, put it in shrine
-        item->updateSprite();
+        if (item->getItemType() == ItemType::RED_SHRINE) {
+
+            if (!robot.isHoldingItem()) {
+                return;
+            }
+
+            item->setVisible(false);
+            auto it = itemMap.find(item);
+
+            if (it != itemMap.end()) {
+                it->second->setVisible(true);
+            };
+        }
+        robot.holdItem(false);
+        robot.updateRobotSprite();
+
+        robot.setWin();
     }
 }
 

@@ -5,6 +5,7 @@
 #include "item.h"
 #include <SFML/Graphics.hpp>
 #include "vector"
+#include "unordered_map"
 
 class Game {
 private:
@@ -18,6 +19,7 @@ private:
     // Game objects
     Robot robot;
     std::vector<Item*> items;
+    std::unordered_map<Item*, Item*> itemMap;
     // Functions
     void initWindow();
     void initItems();

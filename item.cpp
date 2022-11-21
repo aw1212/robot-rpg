@@ -45,7 +45,6 @@ bool Item::canBeCarried() const {
 ////////////////////
 
 void Item::updateSprite() {
-
 }
 
 /////////////////////
@@ -68,10 +67,6 @@ std::string Item::getTextureFile() {
     switch (itemType) {
         case ItemType::RED_SHRINE:
             return "assets/red_shrine.png";
-        case ItemType::BLUE_SHRINE:
-            return "assets/blue_shrine.png";
-        case ItemType::YELLOW_SHRINE:
-            return "assets/yellow_shrine.png";
         case ItemType::BLUE_RECTANGLE:
             return "assets/blue_rectangle.png";
         case ItemType::RED_SHRINE_COMPLETE:

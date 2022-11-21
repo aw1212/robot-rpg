@@ -22,8 +22,13 @@ enum class RobotMovingDirection {
 class Robot {
 private:
     sf::Texture robotFrontTexture, robotBackTexture, robotLeftTexture, robotRightTexture;
+    sf::Texture robotFrontItemTexture, robotBackItemTexture, robotLeftItemTexture, robotRightItemTexture;
+    sf::Texture robotWinTexture;
     sf::Sprite robotSprite;
     RobotFacingDirection robotFacingDirection;
+
+    bool holdingItem;
+
     // Functions
     void initSprite();
 public:
@@ -32,9 +37,14 @@ public:
     virtual ~Robot();
     // Getters
     sf::Sprite& getRobotSprite();
+    bool isHoldingItem();
+    // Setters
+    void holdItem(bool isHoldingItem);
     // Functions
+    void setWin();
     RobotFacingDirection getCurrentFacingDirection();
     void updateFacingPosition(RobotMovingDirection movingDirection);
+    void updateRobotSprite();
     void move(RobotMovingDirection movingDirection);
     void pickUpItem(Item& item);
 };

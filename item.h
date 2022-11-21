@@ -6,8 +6,6 @@
 //TODO make subclasses of item for the different types (carryable, interactable, etc)
 enum class ItemType {
     RED_SHRINE,
-    BLUE_SHRINE,
-    YELLOW_SHRINE,
     BLUE_RECTANGLE,
     RED_SHRINE_COMPLETE,
 };

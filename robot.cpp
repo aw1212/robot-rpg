@@ -26,6 +26,14 @@ sf::Sprite& Robot::getRobotSprite() {
 ///PUBLIC METHODS///
 ////////////////////
 
+bool Robot::isHoldingItem() {
+    return holdingItem;
+}
+
+void Robot::holdItem(bool isHoldingItem) {
+    holdingItem = isHoldingItem;
+}
+
 RobotFacingDirection Robot::getCurrentFacingDirection() {
     return robotFacingDirection;
 }
@@ -34,29 +42,87 @@ void Robot::updateFacingPosition(RobotMovingDirection movingDirection) {
     switch (movingDirection) {
         case RobotMovingDirection::RIGHT: {
             robotFacingDirection = RobotFacingDirection::RIGHT;
-            robotSprite.setTexture(robotRightTexture);
             break;
         }
         case RobotMovingDirection::LEFT: {
             robotFacingDirection = RobotFacingDirection::LEFT;
-            robotSprite.setTexture(robotLeftTexture);
             break;
         }
         case RobotMovingDirection::UP: {
             robotFacingDirection = RobotFacingDirection::BACK;
-            robotSprite.setTexture(robotBackTexture);
             break;
         }
         case RobotMovingDirection::DOWN: {
             robotFacingDirection = RobotFacingDirection::FRONT;
-            robotSprite.setTexture(robotFrontTexture);
+            break;
+        }
+    }
+
+    updateRobotSprite();
+}
+
+void Robot::updateRobotSprite() {
+    switch (robotFacingDirection) {
+        case RobotFacingDirection::RIGHT: {
+            if (isHoldingItem()) {
+                robotSprite.setTexture(robotRightItemTexture);
+            } else {
+                robotSprite.setTexture(robotRightTexture);
+            }
+
+            break;
+        }
+        case RobotFacingDirection::LEFT: {
+            if (isHoldingItem()) {
+                robotSprite.setTexture(robotLeftItemTexture);
+            } else {
+                robotSprite.setTexture(robotLeftTexture);
+            }
+
+            break;
+        }
+        case RobotFacingDirection::BACK: {
+            if (isHoldingItem()) {
+                robotSprite.setTexture(robotBackItemTexture);
+            } else {
+                robotSprite.setTexture(robotBackTexture);
+            }
+
+            break;
+        }
+        case RobotFacingDirection::FRONT: {
+            if (isHoldingItem()) {
+                robotSprite.setTexture(robotFrontItemTexture);
+            } else {
+                robotSprite.setTexture(robotFrontTexture);
+            }
+
             break;
         }
     }
 }
 
 void Robot::pickUpItem(Item &item) {
-    //TODO update robot sprite to carry item
+    switch (robotFacingDirection) {
+        case RobotFacingDirection::FRONT:
+            robotSprite.setTexture(robotFrontItemTexture);
+            break;
+        case RobotFacingDirection::BACK:
+            robotSprite.setTexture(robotBackItemTexture);
+            break;
+        case RobotFacingDirection::LEFT:
+            robotSprite.setTexture(robotLeftItemTexture);
+            break;
+        case RobotFacingDirection::RIGHT:
+            robotSprite.setTexture(robotRightItemTexture);
+            break;
+    }
+
+    holdItem(true);
+}
+
+void Robot::setWin() {
+    robotSprite.setTexture(robotWinTexture);
 }
 
 /////////////////////
@@ -74,6 +140,21 @@ void Robot::initSprite() {
         //return EXIT_FAILURE;
     }
     if (!robotRightTexture.loadFromFile("assets/robot_right.png")) {
+        //return EXIT_FAILURE;
+    }
+    if (robotFrontItemTexture.loadFromFile("assets/robot_front_with_blue_rect.png")) {
+        //return EXIT_FAILURE;
+    }
+    if (robotBackItemTexture.loadFromFile("assets/robot_back_with_blue_rect.png")) {
+        //return EXIT_FAILURE;
+    }
+    if (robotLeftItemTexture.loadFromFile("assets/robot_left_with_blue_rect.png")) {
+        //return EXIT_FAILURE;
+    }
+    if (robotRightItemTexture.loadFromFile("assets/robot_right_with_blue_rect.png")) {
+        //return EXIT_FAILURE;
+    }
+    if (robotWinTexture.loadFromFile("assets/robot_win.png")) {
         //return EXIT_FAILURE;
     }
 
