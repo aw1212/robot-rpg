@@ -1,13 +1,15 @@
+#include <iostream>
 #include "item.h"
 
 ////////////////////////////
 ///CONSTRUCTOR/DESTRUCTOR///
 ////////////////////////////
 
-Item::Item(CarryableItemType itemType, bool visible, sf::Vector2f position, sf::Vector2<float> scale) {
-    this->visible = visible;
-    this->position = position;
+Item::Item(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible, bool carriable) {
     this->itemType = itemType;
+    this->visible = visible;
+    this->carriable = carriable;
+    this->position = position;
     initSprite(scale);
 }
 
@@ -22,8 +24,20 @@ sf::Sprite& Item::getItemSprite() {
     return itemSprite;
 }
 
+ItemType Item::getItemType() {
+    return itemType;
+}
+
 bool Item::isVisible() const {
     return visible;
+}
+
+void Item::setVisible(bool setVisible) {
+    visible = setVisible;
+}
+
+bool Item::canBeCarried() const {
+    return carriable;
 }
 
 ////////////////////
@@ -42,7 +56,7 @@ void Item::initSprite(const sf::Vector2<float> scale) {
     std::string textureFile = getTextureFile();
 
     if (!itemTexture.loadFromFile(textureFile)) {
-        //return EXIT_FAILURE;
+        std::cout << "CANT LOAD" << std::endl;
     }
 
     itemSprite.setTexture(itemTexture);
@@ -52,11 +66,15 @@ void Item::initSprite(const sf::Vector2<float> scale) {
 
 std::string Item::getTextureFile() {
     switch (itemType) {
-        case CarryableItemType::RED_SHRINE_PIECE:
+        case ItemType::RED_SHRINE:
             return "assets/red_shrine.png";
-        case CarryableItemType::BLUE_SHRINE_PIECE:
+        case ItemType::BLUE_SHRINE:
             return "assets/blue_shrine.png";
-        case CarryableItemType::YELLOW_SHRINE_PIECE:
+        case ItemType::YELLOW_SHRINE:
             return "assets/yellow_shrine.png";
+        case ItemType::BLUE_RECTANGLE:
+            return "assets/blue_rectangle.png";
+        case ItemType::RED_SHRINE_COMPLETE:
+            return "assets/red_shrine_with_object.png";
     }
 }

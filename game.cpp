@@ -36,9 +36,9 @@ void Game::render() {
     // Draw game
     window->draw(robot.getRobotSprite());
 
-    for (auto i : items) {
-        if (i->isVisible()) {
-            window->draw(i->getItemSprite());
+    for (auto item : items) {
+        if (item->isVisible()) {
+            window->draw(item->getItemSprite());
         }
     }
 
@@ -51,8 +51,8 @@ void Game::render() {
 /////////////////////
 
 void Game::initWindow() {
-    videoMode.height = 1600;
-    videoMode.width = 1600;
+    videoMode.height = 1400;
+    videoMode.width = 1400;
     window = new sf::RenderWindow(videoMode, "Robotz", sf::Style::Titlebar | sf::Style::Close);
 //    window->setFramerateLimit(144);
 }
@@ -62,14 +62,27 @@ void Game::initWindow() {
 //}
 
 void Game::initItems() {
-    Item* redShrine = new Item(CarryableItemType::RED_SHRINE_PIECE, true, sf::Vector2f(280, 180), sf::Vector2(0.25f, 0.5f));
+    Item* redShrine = new Item(ItemType::RED_SHRINE,
+                               sf::Vector2f(650, 550),
+                               sf::Vector2(0.25f, 0.5f),
+                               true,
+                               false);
+
+    Item* blueRectangle = new Item(ItemType::BLUE_RECTANGLE,
+                               sf::Vector2f(200, 800),
+                               sf::Vector2(0.25f, 0.5f),
+                                   true,
+                               true);
+
+    Item* completedRedShrine = new Item(ItemType::RED_SHRINE_COMPLETE,
+                                        sf::Vector2f(650, 550),
+                                        sf::Vector2(0.25f, 0.5f),
+                                        false,
+                                        false);
+
     items.push_back(redShrine);
-
-    Item* blueShrine = new Item(CarryableItemType::BLUE_SHRINE_PIECE, false, sf::Vector2f(860, 860), sf::Vector2(0.25f, 0.5f));
-    items.push_back(blueShrine);
-
-    Item* yellowShrine = new Item(CarryableItemType::YELLOW_SHRINE_PIECE, false, sf::Vector2f(500, 500), sf::Vector2(0.25f, 0.5f));
-    items.push_back(yellowShrine);
+    items.push_back(blueRectangle);
+    items.push_back(completedRedShrine);
 }
 
 void Game::pollEvents() {
@@ -121,37 +134,75 @@ void Game::updateMousePosition() {
 }
 
 void Game::updateRobot(const RobotMovingDirection movingDirection) {
-    robot.move(movingDirection, shouldRobotMove(movingDirection));
+    robot.updateFacingPosition(movingDirection);
+
+    if (shouldRobotMove(movingDirection)) {
+        robot.move(movingDirection);
+    }
 }
 
 bool Game::shouldRobotMove(const RobotMovingDirection movingDirection) {
     // Robot needs to be within the bounds of the game window and not overlapping with and object
-    const sf::Vector2f robotPosition = robot.getRobotSprite().getPosition();
+    const sf::Sprite robotSprite = robot.getRobotSprite();
+    const sf::Vector2f robotPosition = robotSprite.getPosition();
+    const sf::Rect<float> robotGlobalBounds = robotSprite.getGlobalBounds();
+    const sf::Rect<float> robotLocalBounds = robotSprite.getLocalBounds();
+
+    // robotPosition.x: starts at 0, increases by 10 when robot moves right
+    // robotPosition.y: starts at 0, increases by 10 when robot moves down
+    // robotGlobalBounds.top: starts at 0, increases by 10 when robot moves down
+    // robotGlobalBounds.left: starts at 0, increases by 10 when robot moves right
+    // robotGlobalBounds.width = 256
+    // robotGlobalBounds.height = 256
+    // robotLocalBounds.top = 0
+    // robotLocalBounds.left = 0
+    // robotLocalBounds.width = 512
+    // robotLocalBounds.height = 512
+    // window->getSize().x // 1600
+    // window->getSize().y // 1400
 
     // If robot is at leftmost of screen it cannot move left
-    if (robotPosition.x == 0 && movingDirection == RobotMovingDirection::LEFT) {
+    if (robotPosition.x <= 0 && movingDirection == RobotMovingDirection::LEFT) {
         return false;
     }
 
     // If robot is at top of screen it cannot move up
-    if (robotPosition.y == 0 && movingDirection == RobotMovingDirection::UP) {
+    if (robotPosition.y <= 0 && movingDirection == RobotMovingDirection::UP) {
         return false;
     }
 
     // If robot is at rightmost of screen it cannot move right
-    //TODO this doesnt seem to work correctly
-    if (robotPosition.x == window->getSize().x && movingDirection == RobotMovingDirection::RIGHT) {
+    if (robotGlobalBounds.left + robotGlobalBounds.width >= window->getSize().y
+            && movingDirection == RobotMovingDirection::RIGHT) {
         return false;
     }
 
-    // If robot is at bottom of screen it cannot move right
-    if (robotPosition.x == window->getSize().y && movingDirection == RobotMovingDirection::DOWN) {
+    // If robot is at bottom of screen it cannot move down
+    if (robotGlobalBounds.top + robotGlobalBounds.height >= window->getSize().x
+            && movingDirection == RobotMovingDirection::DOWN) {
         return false;
+    }
+
+    // If robot is near an item, it cannot move into it
+    for (Item* item : items) {
+        sf::Sprite itemSprite = item->getItemSprite();
+        const sf::Rect<float> itemGlobalBounds = itemSprite.getGlobalBounds();
+
+        //itemSprite.getGlobalBounds().left = 280
+        //itemSprite.getGlobalBounds().top = 180
+        //itemSprite.getGlobalBounds().height = 256
+        //itemSprite.getGlobalBounds().width = 128
+
+        //TODO this is utter shite need to update
+        Robot movedRobot = robot;
+        movedRobot.move(movingDirection);
+
+        if (movedRobot.getRobotSprite().getGlobalBounds().intersects(itemGlobalBounds)) {
+            return false;
+        }
     }
 
     return shouldUpdateRobotPosition(movingDirection);
-
-    //TODO overlapping objects?
 }
 
 bool Game::shouldUpdateRobotPosition(const RobotMovingDirection movingDirection) {
@@ -183,15 +234,17 @@ Item* Game::clickedOnItem() {
 
 bool Game::isItemClickable(Item& item) {
     return item.isVisible() &&
-    robot.getRobotSprite().getGlobalBounds().intersects(item.getItemSprite().getGlobalBounds());
+        robot.getRobotSprite().getGlobalBounds().intersects(item.getItemSprite().getGlobalBounds());
 }
 
 void Game::updateItem(Item* item) {
-    // If the clicked on item is carryable (a shrine piece) then pick it up
-    robot.pickUpItem(*item);
-
-    // If the clicked on item is a shrine and we are holding the correct piece, put it in shrine
-    item->updateSprite();
+    // If the clicked on item is carriable (a shrine piece) then pick it up
+    if (item->canBeCarried()) {
+        robot.pickUpItem(*item);
+    } else {
+        // If the clicked on item is a shrine and we are holding the correct piece, put it in shrine
+        item->updateSprite();
+    }
 }
 
 

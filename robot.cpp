@@ -30,7 +30,7 @@ RobotFacingDirection Robot::getCurrentFacingDirection() {
     return robotFacingDirection;
 }
 
-void Robot::move(RobotMovingDirection movingDirection, bool shouldMove) {
+void Robot::updateFacingPosition(RobotMovingDirection movingDirection) {
     switch (movingDirection) {
         case RobotMovingDirection::RIGHT: {
             robotFacingDirection = RobotFacingDirection::RIGHT;
@@ -53,13 +53,10 @@ void Robot::move(RobotMovingDirection movingDirection, bool shouldMove) {
             break;
         }
     }
-
-    if (shouldMove) {
-        move(movingDirection);
-    }
 }
 
 void Robot::pickUpItem(Item &item) {
+    //TODO update robot sprite to carry item
 }
 
 /////////////////////

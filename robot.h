@@ -26,7 +26,6 @@ private:
     RobotFacingDirection robotFacingDirection;
     // Functions
     void initSprite();
-    void move(RobotMovingDirection movingDirection);
 public:
     // Constructors/Destructors
     Robot();
@@ -35,7 +34,8 @@ public:
     sf::Sprite& getRobotSprite();
     // Functions
     RobotFacingDirection getCurrentFacingDirection();
-    void move(RobotMovingDirection movingDirection, bool shouldMove);
+    void updateFacingPosition(RobotMovingDirection movingDirection);
+    void move(RobotMovingDirection movingDirection);
     void pickUpItem(Item& item);
 };
 
