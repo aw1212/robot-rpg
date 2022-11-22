@@ -25,10 +25,10 @@ private:
     void initItems();
     void pollEvents();
     void updateMousePosition();
-    void updateRobot(RobotMovingDirection movingDirection);
-    Item* clickedOnItem();
+    void updateRobot(const RobotMovingDirection movingDirection);
+    Item* const clickedOnItem();
     bool isItemClickable(Item& item);
-    void updateItem(Item* item);
+    void updateItem(Item* const item);
     bool shouldRobotMove(RobotMovingDirection movingDirection);
     bool shouldUpdateRobotPosition(RobotMovingDirection movingDirection);
 public:

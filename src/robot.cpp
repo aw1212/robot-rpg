@@ -1,4 +1,4 @@
-#include "robot.h"
+#include "../include/robot.h"
 
 constexpr int moveIncrement = 10;
 
@@ -8,6 +8,7 @@ constexpr int moveIncrement = 10;
 
 Robot::Robot() {
     robotFacingDirection = RobotFacingDirection::FRONT;
+    holdingItem = false;
     initSprite();
 }
 
@@ -26,11 +27,11 @@ sf::Sprite& Robot::getRobotSprite() {
 ///PUBLIC METHODS///
 ////////////////////
 
-bool Robot::isHoldingItem() {
+const bool Robot::isHoldingItem() const {
     return holdingItem;
 }
 
-void Robot::holdItem(bool isHoldingItem) {
+void Robot::holdItem(const bool isHoldingItem) {
     holdingItem = isHoldingItem;
 }
 
@@ -38,7 +39,7 @@ RobotFacingDirection Robot::getCurrentFacingDirection() {
     return robotFacingDirection;
 }
 
-void Robot::updateFacingPosition(RobotMovingDirection movingDirection) {
+void Robot::updateFacingPosition(const RobotMovingDirection movingDirection) {
     switch (movingDirection) {
         case RobotMovingDirection::RIGHT: {
             robotFacingDirection = RobotFacingDirection::RIGHT;
@@ -102,7 +103,7 @@ void Robot::updateRobotSprite() {
     }
 }
 
-void Robot::pickUpItem(Item &item) {
+void Robot::pickUpItem(const Item& item) {
     switch (robotFacingDirection) {
         case RobotFacingDirection::FRONT:
             robotSprite.setTexture(robotFrontItemTexture);

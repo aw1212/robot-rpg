@@ -4,10 +4,10 @@ project(RobotRPG)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
-set(SOURCE_FILES main.cpp game.cpp game.h robot.cpp robot.h item.cpp item.h)
+set(SOURCE_FILES src/main.cpp src/game.cpp src/robot.cpp src/item.cpp)
 add_executable(RobotRPG ${SOURCE_FILES})
 include_directories(/usr/local/include)
 
 find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)
-include_directories(${SFML_INCLUDE_DIRS})
+include_directories(${SFML_INCLUDE_DIRS}, include)
 target_link_libraries(RobotRPG sfml-system sfml-window sfml-graphics sfml-audio)

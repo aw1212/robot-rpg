@@ -1,5 +1,5 @@
 #include <iostream>
-#include "item.h"
+#include "../include/item.h"
 
 ////////////////////////////
 ///CONSTRUCTOR/DESTRUCTOR///
@@ -38,13 +38,6 @@ void Item::setVisible(bool setVisible) {
 
 bool Item::canBeCarried() const {
     return carriable;
-}
-
-////////////////////
-///PUBLIC METHODS///
-////////////////////
-
-void Item::updateSprite() {
 }
 
 /////////////////////

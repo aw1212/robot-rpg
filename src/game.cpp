@@ -1,4 +1,4 @@
-#include "game.h"
+#include "../include/game.h"
 #include <iostream>
 
 ////////////////////////////
@@ -26,12 +26,12 @@ bool Game::isRunning() {
 
 void Game::update() {
     pollEvents();
-    updateMousePosition();
-    //std::cout << robot.getRobotSprite().getPosition().x << " " << robot.getRobotSprite().getPosition().y << std::endl;
+    updateMousePosition();;
 }
 
 void Game::render() {
-    window->clear(sf::Color::White); // Clear old frame
+    // Clear old frame
+    window->clear(sf::Color::White);
 
     // Draw game
     window->draw(robot.getRobotSprite());
@@ -42,7 +42,7 @@ void Game::render() {
         }
     }
 
-    // Displays - tell app that window is done drawing
+    // Displays - tell program that window is done drawing
     window->display();
 }
 
@@ -114,7 +114,7 @@ void Game::pollEvents() {
                 break;
             }
             case sf::Event::MouseButtonPressed: {
-                Item* item = clickedOnItem();
+                Item* const item = clickedOnItem();
                 if (item != nullptr) {
                     updateItem(item);
                 }
@@ -221,7 +221,7 @@ bool Game::shouldUpdateRobotPosition(const RobotMovingDirection movingDirection)
             (facingDirection == RobotFacingDirection::BACK && movingDirection == RobotMovingDirection::UP);
 }
 
-Item* Game::clickedOnItem() {
+Item* const Game::clickedOnItem() {
     // Determine if any clickable (visible and in-range) item was clicked on
     for (auto item : items) {
         if (isItemClickable(*item)) {
@@ -274,7 +274,7 @@ bool nearIntersect(const sf::Rect<float>& rectangle1, sf::Rect<float> rectangle2
     return false;
 }
 
-void Game::updateItem(Item* item) {
+void Game::updateItem(Item* const item) {
     // If the clicked on item is carriable (a shrine piece) then pick it up
     if (item->canBeCarried()) {
         robot.pickUpItem(*item);
