@@ -20,32 +20,33 @@ enum class RobotMovingDirection {
 };
 
 class Robot {
-    public:
-        // Constructors/Destructors
-        Robot();
-        virtual ~Robot();
-        // Getters
-        sf::Sprite& getRobotSprite();
-        const bool isHoldingItem() const;
-        // Setters
-        void holdItem(const bool isHoldingItem);
-        // Functions
-        void setWin();
-        RobotFacingDirection getCurrentFacingDirection();
-        void updateFacingPosition(const RobotMovingDirection movingDirection);
-        void updateRobotSprite();
-        void move(const RobotMovingDirection movingDirection);
-        void pickUpItem(const Item& item);
-    private:
-        sf::Texture robotFrontTexture, robotBackTexture, robotLeftTexture, robotRightTexture;
-        sf::Texture robotFrontItemTexture, robotBackItemTexture, robotLeftItemTexture, robotRightItemTexture;
-        sf::Texture robotWinTexture;
-        sf::Sprite robotSprite;
-        RobotFacingDirection robotFacingDirection;
-        bool holdingItem;
+public:
+    // Constructors/Destructors
+    Robot();
+    virtual ~Robot();
+    // Getters
+    sf::Sprite& getRobotSprite();
+    const bool isHoldingItem() const;
+    // Setters
+    void holdItem(const bool isHoldingItem);
+    // Functions
+    void setDefaultTexture();
+    void setWinTexture();
+    RobotFacingDirection getCurrentFacingDirection();
+    void updateFacingPosition(const RobotMovingDirection movingDirection);
+    void updateRobotSprite();
+    void move(const RobotMovingDirection movingDirection);
+    void pickUpItem(const Item& item);
+private:
+    sf::Texture robotFrontTexture, robotBackTexture, robotLeftTexture, robotRightTexture;
+    sf::Texture robotFrontItemTexture, robotBackItemTexture, robotLeftItemTexture, robotRightItemTexture;
+    sf::Texture robotWinTexture;
+    sf::Sprite robotSprite;
+    RobotFacingDirection robotFacingDirection;
+    bool holdingItem;
 
-        // Functions
-        void initSprite();
+    // Functions
+    void initSprite();
 };
 
 #endif //ROBOTRPG_ROBOT_H

@@ -3,11 +3,20 @@
 
 #include "robot.h"
 #include "item.h"
+#include "board.h"
 #include <SFML/Graphics.hpp>
 #include "vector"
 #include "unordered_map"
 
 class Game {
+public:
+    // Constructors/Destructors
+    Game();
+    virtual ~Game();
+    // Functions
+    bool isRunning();
+    void update();
+    void render();
 private:
     // Window
     sf::RenderWindow* window;
@@ -20,6 +29,12 @@ private:
     Robot robot;
     std::vector<Item*> items;
     std::unordered_map<Item*, Item*> itemMap;
+    sf::Text text;
+    // Game Board
+    Board board;
+    // Game state
+    bool gameWon;
+    int frame = 0;
     // Functions
     void initWindow();
     void initItems();
@@ -31,14 +46,7 @@ private:
     void updateItem(Item* const item);
     bool shouldRobotMove(RobotMovingDirection movingDirection);
     bool shouldUpdateRobotPosition(RobotMovingDirection movingDirection);
-public:
-    // Constructors/Destructors
-    Game();
-    virtual ~Game();
-    // Functions
-    bool isRunning();
-    void update();
-    void render();
+    void mouseClicked();
 };
 
 #endif //ROBOTRPG_GAME_H

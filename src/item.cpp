@@ -5,15 +5,17 @@
 ///CONSTRUCTOR/DESTRUCTOR///
 ////////////////////////////
 
-Item::Item(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible, bool carriable) {
-    this->itemType = itemType;
-    this->visible = visible;
-    this->carriable = carriable;
-    this->position = position;
+Item::Item(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible, bool carriable) :
+    itemType{itemType}, visible{visible}, carriable{carriable}, position{position} {
     initSprite(scale);
 }
 
-Item::~Item() {
+ShrineObjectItem::ShrineObjectItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible) :
+    Item(itemType, position, scale, visible, true) {
+}
+
+ShrineItem::ShrineItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible) :
+    Item(itemType, position, scale, visible, false) {
 }
 
 ///////////////

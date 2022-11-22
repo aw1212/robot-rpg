@@ -122,7 +122,11 @@ void Robot::pickUpItem(const Item& item) {
     holdItem(true);
 }
 
-void Robot::setWin() {
+void Robot::setDefaultTexture() {
+    robotSprite.setTexture(robotFrontTexture);
+}
+
+void Robot::setWinTexture() {
     robotSprite.setTexture(robotWinTexture);
 }
 
@@ -159,7 +163,7 @@ void Robot::initSprite() {
         //return EXIT_FAILURE;
     }
 
-    robotSprite.setTexture(robotFrontTexture);
+    setDefaultTexture();
     robotSprite.setScale(0.5, 0.5);
     robotSprite.setPosition(0, 0);
 }

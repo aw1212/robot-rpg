@@ -4,7 +4,7 @@ project(RobotRPG)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
-set(SOURCE_FILES src/main.cpp src/game.cpp src/robot.cpp src/item.cpp)
+set(SOURCE_FILES src/main.cpp src/game.cpp src/robot.cpp src/item.cpp src/board.cpp)
 add_executable(RobotRPG ${SOURCE_FILES})
 include_directories(/usr/local/include)
 

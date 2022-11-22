@@ -31,7 +31,8 @@ void Game::update() {
 
 void Game::render() {
     // Clear old frame
-    window->clear(sf::Color::White);
+    sf::Color windowColor = gameWon ? sf::Color(229, 204, 255, 255) : sf::Color(215, 241, 191, 255);
+    window->clear(windowColor);
 
     // Draw game
     window->draw(robot.getRobotSprite());
@@ -40,6 +41,44 @@ void Game::render() {
         if (item->isVisible()) {
             window->draw(item->getItemSprite());
         }
+    }
+
+    if (gameWon) {
+        sf::Font font;
+        if (!font.loadFromFile("assets/fonts/AlexBrush-Regular.ttf")) {
+            std::cout << "CANT LOAD FONT" << std::endl;
+        }
+
+        // select the font
+        text.setFont(font);
+
+        // set the string to display
+        text.setString("YOU WON");
+
+        // set the character size (in pixels, not points!)
+        text.setCharacterSize(200);
+
+        // set the color
+        text.setFillColor(sf::Color::Red);
+
+        // set position
+        text.setPosition(100, 200);
+
+        // set letter spacing
+        text.setLetterSpacing(2);
+
+        // set the text style
+        text.setStyle(sf::Text::Bold);
+
+        window->setFramerateLimit(100);
+        if (frame % 2 == 0) {
+            robot.setWinTexture();
+        } else {
+            robot.setDefaultTexture();
+        }
+
+        frame++;
+        window->draw(text);
     }
 
     // Displays - tell program that window is done drawing
@@ -62,22 +101,19 @@ void Game::initWindow() {
 //}
 
 void Game::initItems() {
-    Item* redShrine = new Item(ItemType::RED_SHRINE,
-                               sf::Vector2f(650, 550),
+    Item* redShrine = new ShrineItem(ItemType::RED_SHRINE,
+                                 sf::Vector2f(650, 550),
                                sf::Vector2(0.25f, 0.25f),
-                               true,
-                               false);
-
-    Item* blueRectangle = new Item(ItemType::BLUE_RECTANGLE,
-                               sf::Vector2f(200, 1000),
-                               sf::Vector2(0.25f, 0.25f),
-                                   true,
                                true);
 
-    Item* completedRedShrine = new Item(ItemType::RED_SHRINE_COMPLETE,
-                                        sf::Vector2f(650, 550),
+    Item* blueRectangle = new ShrineObjectItem(ItemType::BLUE_RECTANGLE,
+                               sf::Vector2f(200, 1000),
+                               sf::Vector2(0.25f, 0.25f),
+                               true);
+
+    Item* completedRedShrine = new ShrineItem(ItemType::RED_SHRINE_COMPLETE,
+                                    sf::Vector2f(650, 550),
                                         sf::Vector2(0.25f, 0.25f),
-                                        false,
                                         false);
 
     items.push_back(redShrine);
@@ -111,19 +147,26 @@ void Game::pollEvents() {
                 if (keyCode == sf::Keyboard::Down || keyCode == sf::Keyboard::D) {
                     updateRobot(RobotMovingDirection::DOWN);
                 }
+                if (keyCode == sf::Keyboard::Space || keyCode == sf::Keyboard::Enter) {
+                    mouseClicked();
+                }
                 break;
             }
             case sf::Event::MouseButtonPressed: {
-                Item* const item = clickedOnItem();
-                if (item != nullptr) {
-                    updateItem(item);
-                }
+                mouseClicked();
                 break;
             }
             default: {
                 //TODO
             }
         }
+    }
+}
+
+void Game::mouseClicked() {
+    Item* const item = clickedOnItem();
+    if (item != nullptr) {
+        updateItem(item);
     }
 }
 
@@ -235,43 +278,12 @@ Item* const Game::clickedOnItem() {
     return nullptr;
 }
 
-bool nearIntersect(const sf::Rect<float>& rectangle1, sf::Rect<float> rectangle2);
-
 bool Game::isItemClickable(Item& item) {
     if (!item.isVisible()) {
         return false;
     }
 
-    return nearIntersect(robot.getRobotSprite().getGlobalBounds(), item.getItemSprite().getGlobalBounds());
-}
-
-bool nearIntersect(const sf::Rect<float>& rectangle1, sf::Rect<float> rectangle2) {
-    // Rectangles with negative dimensions are allowed, so we must handle them correctly
-
-    // Compute the min and max of the first rectangle on both axes
-    float r1MinX = std::min(rectangle1.left, static_cast<float>(rectangle1.left + rectangle1.width));
-    float r1MaxX = std::max(rectangle1.left, static_cast<float>(rectangle1.left + rectangle1.width));
-    float r1MinY = std::min(rectangle1.top, static_cast<float>(rectangle1.top + rectangle1.height));
-    float r1MaxY = std::max(rectangle1.top, static_cast<float>(rectangle1.top + rectangle1.height));
-
-    // Compute the min and max of the second rectangle on both axes
-    float r2MinX = std::min(rectangle2.left, static_cast<float>(rectangle2.left + rectangle2.width));
-    float r2MaxX = std::max(rectangle2.left, static_cast<float>(rectangle2.left + rectangle2.width));
-    float r2MinY = std::min(rectangle2.top, static_cast<float>(rectangle2.top + rectangle2.height));
-    float r2MaxY = std::max(rectangle2.top, static_cast<float>(rectangle2.top + rectangle2.height));
-
-    // Compute the intersection boundaries
-    float interLeft = std::max(r1MinX, r2MinX);
-    float interTop = std::max(r1MinY, r2MinY);
-    float interRight = std::min(r1MaxX, r2MaxX) + 20;
-    float interBottom = std::min(r1MaxY, r2MaxY) + 20;
-
-    // If the intersection is valid (positive non zero area), then there is an intersection
-    if ((interLeft < interRight) && (interTop < interBottom)) {
-        return true;
-    }
-
-    return false;
+    return board.isNearIntersect(robot.getRobotSprite().getGlobalBounds(), item.getItemSprite().getGlobalBounds());
 }
 
 void Game::updateItem(Item* const item) {
@@ -297,8 +309,9 @@ void Game::updateItem(Item* const item) {
         robot.holdItem(false);
         robot.updateRobotSprite();
 
-        robot.setWin();
+        gameWon = true;
     }
 }
+
 
 
