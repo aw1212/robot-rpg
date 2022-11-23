@@ -16,7 +16,7 @@ public:
     // Functions
     bool isRunning();
     void update();
-    void render();
+    void renderBoard();
 private:
     // Window
     sf::RenderWindow* window;
@@ -38,10 +38,11 @@ private:
     // Functions
     void initWindow();
     void initItems();
+    void initRobot();
     void pollEvents();
     void updateMousePosition();
     void updateRobot(const RobotMovingDirection movingDirection);
-    Item* const clickedOnItem();
+    Item* clickedOnItem();
     bool isItemClickable(Item& item);
     void updateItem(Item* const item);
     bool shouldRobotMove(RobotMovingDirection movingDirection);

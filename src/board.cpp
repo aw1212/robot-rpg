@@ -18,8 +18,8 @@ bool Board::isNearIntersect(const sf::Rect<float>& rectangle1, sf::Rect<float> r
     // Compute the intersection boundaries
     float interLeft = std::max(r1MinX, r2MinX);
     float interTop = std::max(r1MinY, r2MinY);
-    float interRight = std::min(r1MaxX, r2MaxX) + 20;
-    float interBottom = std::min(r1MaxY, r2MaxY) + 20;
+    float interRight = std::min(r1MaxX, r2MaxX) + nearIntersectDistance;
+    float interBottom = std::min(r1MaxY, r2MaxY) + nearIntersectDistance;
 
     // If the intersection is valid (positive non zero area), then there is an intersection
     if ((interLeft < interRight) && (interTop < interBottom)) {

@@ -9,7 +9,7 @@ int main() {
         // Update
         game->update();
         // Render
-        game->render();
+        game->renderBoard();
     }
 
     delete game;

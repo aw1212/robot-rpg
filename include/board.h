@@ -6,6 +6,8 @@
 class Board {
 public:
     bool isNearIntersect(const sf::Rect<float>& rectangle1, sf::Rect<float> rectangle2);
+private:
+    const int nearIntersectDistance = 10;
 };
 
 #endif //ROBOTRPG_BOARD_H

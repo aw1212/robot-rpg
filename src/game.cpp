@@ -8,8 +8,8 @@
 Game::Game() {
     window = nullptr;
     initWindow();
+    initRobot();
     initItems();
-//    initRobot();
 }
 
 Game::~Game() {
@@ -29,14 +29,39 @@ void Game::update() {
     updateMousePosition();;
 }
 
-void Game::render() {
+void Game::renderBoard() {
     // Clear old frame
-    sf::Color windowColor = gameWon ? sf::Color(229, 204, 255, 255) : sf::Color(215, 241, 191, 255);
-    window->clear(windowColor);
+    //sf::Color windowColor = gameWon ? sf::Color(229, 204, 255, 255) : sf::Color(215, 241, 191, 255);
+    //window->clear(windowColor);
+    window->clear();
 
-    // Draw game
+    // Draw background
+    sf::Texture backgroundCity;
+    if (!backgroundCity.loadFromFile("assets/future_wallpaper.png")) {
+        std::cout << "CANT LOAD BACKGROUND CITY" << std::endl;
+        exit(1);
+    }
+
+    sf::Sprite backgroundCitySprite;
+    backgroundCitySprite.setTexture(backgroundCity);
+    backgroundCitySprite.setPosition(-250, 0);
+    window->draw(backgroundCitySprite);
+
+//    sf::Texture shrineBackground;
+//    if (!shrineBackground.loadFromFile("assets/background.jpg")) {
+//        std::cout << "CANT LOAD SHRINE BACKGROUND" << std::endl;
+//        exit(1);
+//    }
+//
+//    sf::Sprite shrineBackgroundSprite;
+//    shrineBackgroundSprite.setTexture(shrineBackground);
+//    shrineBackgroundSprite.setPosition(560, 370);
+//    window->draw(shrineBackgroundSprite);
+
+    // Draw robot
     window->draw(robot.getRobotSprite());
 
+    // Draw items
     for (auto item : items) {
         if (item->isVisible()) {
             window->draw(item->getItemSprite());
@@ -47,6 +72,7 @@ void Game::render() {
         sf::Font font;
         if (!font.loadFromFile("assets/fonts/AlexBrush-Regular.ttf")) {
             std::cout << "CANT LOAD FONT" << std::endl;
+            exit(1);
         }
 
         // select the font
@@ -62,7 +88,7 @@ void Game::render() {
         text.setFillColor(sf::Color::Red);
 
         // set position
-        text.setPosition(100, 200);
+        text.setPosition(100, 5);
 
         // set letter spacing
         text.setLetterSpacing(2);
@@ -90,29 +116,29 @@ void Game::render() {
 /////////////////////
 
 void Game::initWindow() {
-    videoMode.height = 1400;
+    videoMode.height = 1000;
     videoMode.width = 1400;
     window = new sf::RenderWindow(videoMode, "Robotz", sf::Style::Titlebar | sf::Style::Close);
 //    window->setFramerateLimit(144);
 }
 
-//void Game::initRobot() {
-//
-//}
+void Game::initRobot() {
+    robot.initSprite();
+}
 
 void Game::initItems() {
     Item* redShrine = new ShrineItem(ItemType::RED_SHRINE,
-                                 sf::Vector2f(650, 550),
+                                 sf::Vector2f(650, 660),
                                sf::Vector2(0.25f, 0.25f),
                                true);
 
     Item* blueRectangle = new ShrineObjectItem(ItemType::BLUE_RECTANGLE,
-                               sf::Vector2f(200, 1000),
+                               sf::Vector2f(100, 810),
                                sf::Vector2(0.25f, 0.25f),
                                true);
 
     Item* completedRedShrine = new ShrineItem(ItemType::RED_SHRINE_COMPLETE,
-                                    sf::Vector2f(650, 550),
+                                    sf::Vector2f(650, 660),
                                         sf::Vector2(0.25f, 0.25f),
                                         false);
 
@@ -157,7 +183,7 @@ void Game::pollEvents() {
                 break;
             }
             default: {
-                //TODO
+                //std::cout << "UNKNOWN KEY PRESSED" << std::endl;
             }
         }
     }
@@ -240,7 +266,9 @@ bool Game::shouldRobotMove(const RobotMovingDirection movingDirection) {
             //itemSprite.getGlobalBounds().height = 256
             //itemSprite.getGlobalBounds().width = 128
 
-            //TODO this is utter shite need to update
+            //TODO this is utter shit need to update
+            // Need to see if the robot *would* end up intersecting but cannot move it or it will
+            // stay stuck and unable to move.
             Robot movedRobot = robot;
             movedRobot.move(movingDirection);
 
@@ -264,7 +292,7 @@ bool Game::shouldUpdateRobotPosition(const RobotMovingDirection movingDirection)
             (facingDirection == RobotFacingDirection::BACK && movingDirection == RobotMovingDirection::UP);
 }
 
-Item* const Game::clickedOnItem() {
+Item* Game::clickedOnItem() {
     // Determine if any clickable (visible and in-range) item was clicked on
     for (auto item : items) {
         if (isItemClickable(*item)) {
@@ -293,8 +321,8 @@ void Game::updateItem(Item* const item) {
         item->setVisible(false);
     } else {
         // If the clicked on item is a shrine and we are holding the correct piece, put it in shrine
+        //TODO dont hardcode the shrine pieces or move this logic to somewhere else
         if (item->getItemType() == ItemType::RED_SHRINE) {
-
             if (!robot.isHoldingItem()) {
                 return;
             }

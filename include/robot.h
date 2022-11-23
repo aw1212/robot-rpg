@@ -21,9 +21,6 @@ enum class RobotMovingDirection {
 
 class Robot {
 public:
-    // Constructors/Destructors
-    Robot();
-    virtual ~Robot();
     // Getters
     sf::Sprite& getRobotSprite();
     const bool isHoldingItem() const;
@@ -37,6 +34,7 @@ public:
     void updateRobotSprite();
     void move(const RobotMovingDirection movingDirection);
     void pickUpItem(const Item& item);
+    void initSprite();
 private:
     sf::Texture robotFrontTexture, robotBackTexture, robotLeftTexture, robotRightTexture;
     sf::Texture robotFrontItemTexture, robotBackItemTexture, robotLeftItemTexture, robotRightItemTexture;
@@ -44,9 +42,6 @@ private:
     sf::Sprite robotSprite;
     RobotFacingDirection robotFacingDirection;
     bool holdingItem;
-
-    // Functions
-    void initSprite();
 };
 
 #endif //ROBOTRPG_ROBOT_H

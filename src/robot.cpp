@@ -2,19 +2,6 @@
 
 constexpr int moveIncrement = 10;
 
-////////////////////////////
-///CONSTRUCTOR/DESTRUCTOR///
-////////////////////////////
-
-Robot::Robot() {
-    robotFacingDirection = RobotFacingDirection::FRONT;
-    holdingItem = false;
-    initSprite();
-}
-
-Robot::~Robot() {
-}
-
 ///////////////
 ///ACCESSORS///
 ///////////////
@@ -164,6 +151,8 @@ void Robot::initSprite() {
     }
 
     setDefaultTexture();
+    robotFacingDirection = RobotFacingDirection::FRONT;
+    holdingItem = false;
     robotSprite.setScale(0.5, 0.5);
     robotSprite.setPosition(0, 0);
 }

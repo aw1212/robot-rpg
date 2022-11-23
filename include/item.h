@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 
-//TODO make subclasses of item for the different types (carryable, interactable, etc)
 enum class ItemType {
     RED_SHRINE,
     BLUE_RECTANGLE,
