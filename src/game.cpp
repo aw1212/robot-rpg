@@ -1,7 +1,6 @@
 #include "game.h"
 #include <iostream>
 #include "string"
-#include <unistd.h>
 #include <random>
 #include <chrono>
 #include <thread>
@@ -40,9 +39,6 @@ void Game::renderBoard() {
     // Draw background
     loadBackground();
 
-    // Draw robot
-    window->draw(robot.getRobotSprite());
-
     // Draw items
     auto it = items.find(level);
     if (it != items.end()) {
@@ -53,15 +49,17 @@ void Game::renderBoard() {
         }
     }
 
+    // Draw robot
+    window->draw(robot.getRobotSprite());
+
     if (levelUp) {
         level++;
     }
 
-    if (level == 3) {
+    if (level == 4) {
         gameWon = true;
     }
 
-    //TODO add level text
     if (gameWon) {
         if (!font.loadFromFile("assets/fonts/AlexBrush-Regular.ttf")) {
             std::cout << "CANT LOAD FONT" << std::endl;
@@ -139,6 +137,7 @@ void Game::loadBackground() {
     backgroundMap.emplace(1, "assets/future_wallpaper.png");
     backgroundMap.emplace(2, "assets/future_wallpaper.png");
     backgroundMap.emplace(3, "assets/future_wallpaper.png");
+    backgroundMap.emplace(4, "assets/future_wallpaper.png");
 
     auto it = backgroundMap.find(level);
 
@@ -215,17 +214,14 @@ void Game::initItems() {
     level2Items.push_back(level2CompletedShrine);
 
     for (int i = 0; i < 5; i++) {
-        std::uniform_int_distribution<int> intDistroX(100,1200);
+        std::uniform_int_distribution<int> intDistroX(100,1300);
         std::default_random_engine defEngineX(i + 1);
 
-        std::uniform_int_distribution<int> intDistroY(100,1400);
+        std::uniform_int_distribution<int> intDistroY(100,900);
         std::default_random_engine defEngineY(i + 2);
 
         int valX = intDistroX(defEngineX);
         int valY = intDistroY(defEngineY);
-
-        std::cout << "X value: " << valX << std::endl;
-        std::cout << "Y value: " << valY << std::endl;
 
         Item* level2DecoyItem = new DecoyItem(ItemType::DECOY_PIECE,
                                   sf::Vector2f(valX, valY),
@@ -234,10 +230,50 @@ void Game::initItems() {
         level2Items.push_back(level2DecoyItem);
     }
 
+    std::vector<Item*> level3Items;
+
+    Item* level3Shrine = new ShrineItem(ItemType::SHRINE,
+                                        sf::Vector2f(650, 660),
+                                        sf::Vector2(0.25f, 0.25f),
+                                        true);
+
+    Item* level3ShrineItem = new ShrinePieceItem(ItemType::SHRINE_PIECE,
+                                                 sf::Vector2f(1000, 400),
+                                                 sf::Vector2(0.25f, 0.25f),
+                                                 true);
+
+    Item* level3CompletedShrine = new ShrineItem(ItemType::COMPLETED_SHRINE,
+                                                 sf::Vector2f(650, 660),
+                                                 sf::Vector2(0.25f, 0.25f),
+                                                 false);
+
+    level3Items.push_back(level3Shrine);
+    level3Items.push_back(level3ShrineItem);
+    level3Items.push_back(level3CompletedShrine);
+
+    for (int i = 0; i < 30; i++) {
+        std::uniform_int_distribution<int> intDistroX(1 * i,1300);
+        std::default_random_engine defEngineX(i + 1);
+
+        std::uniform_int_distribution<int> intDistroY(2 * i,900);
+        std::default_random_engine defEngineY(i + 2);
+
+        int valX = intDistroX(defEngineX);
+        int valY = intDistroY(defEngineY);
+
+        Item* level3DecoyItem = new DecoyItem(ItemType::DECOY_PIECE,
+                                              sf::Vector2f(valX, valY),
+                                              sf::Vector2(0.25f, 0.25f));
+
+        level3Items.push_back(level3DecoyItem);
+    }
+
     itemMap.emplace(1, level1CompletedRedShrine);
     itemMap.emplace(2, level2CompletedShrine);
+    itemMap.emplace(3, level3CompletedShrine);
     items.emplace(1, level1Items);
     items.emplace(2, level2Items);
+    items.emplace(3, level3Items);
 }
 
 void Game::pollEvents() {
@@ -308,7 +344,6 @@ bool Game::shouldRobotMove(const RobotMovingDirection movingDirection) {
     const sf::Sprite robotSprite = robot.getRobotSprite();
     const sf::Vector2f robotPosition = robotSprite.getPosition();
     const sf::Rect<float> robotGlobalBounds = robotSprite.getGlobalBounds();
-    const sf::Rect<float> robotLocalBounds = robotSprite.getLocalBounds();
 
     // If robot is at leftmost of screen it cannot move left
     if (robotPosition.x <= 0 && movingDirection == RobotMovingDirection::LEFT) {
@@ -321,13 +356,13 @@ bool Game::shouldRobotMove(const RobotMovingDirection movingDirection) {
     }
 
     // If robot is at rightmost of screen it cannot move right
-    if (robotGlobalBounds.left + robotGlobalBounds.width >= window->getSize().y
+    if (robotGlobalBounds.left + robotGlobalBounds.width >= window->getSize().x
             && movingDirection == RobotMovingDirection::RIGHT) {
         return false;
     }
 
     // If robot is at bottom of screen it cannot move down
-    if (robotGlobalBounds.top + robotGlobalBounds.height >= window->getSize().x
+    if (robotGlobalBounds.top + robotGlobalBounds.height >= window->getSize().y
             && movingDirection == RobotMovingDirection::DOWN) {
         return false;
     }
@@ -338,7 +373,7 @@ bool Game::shouldRobotMove(const RobotMovingDirection movingDirection) {
     if (it != items.end()) {
         for (Item* item : it->second) {
 
-            if (item->isVisible()) {
+            if (item->isVisible() && item->getItemType() != ItemType::DECOY_PIECE) {
                 sf::Sprite itemSprite = item->getItemSprite();
                 const sf::Rect<float> itemGlobalBounds = itemSprite.getGlobalBounds();
 
