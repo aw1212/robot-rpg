@@ -14,7 +14,7 @@ sf::Sprite& Robot::getRobotSprite() {
 ///PUBLIC METHODS///
 ////////////////////
 
-const bool Robot::isHoldingItem() const {
+bool Robot::isHoldingItem() const {
     return holdingItem;
 }
 
@@ -113,8 +113,18 @@ void Robot::setDefaultTexture() {
     robotSprite.setTexture(robotFrontTexture);
 }
 
-void Robot::setWinTexture() {
+void Robot::setDefault() {
+    setDefaultTexture();
+    robotFacingDirection = RobotFacingDirection::FRONT;
+    holdingItem = false;
+    robotSprite.setScale(0.5, 0.5);
+    robotSprite.setPosition(0, 0);
+}
+
+void Robot::setWin() {
     robotSprite.setTexture(robotWinTexture);
+    robotSprite.setScale(1, 1);
+    robotSprite.setPosition(455, 365);
 }
 
 /////////////////////
@@ -150,11 +160,7 @@ void Robot::initSprite() {
         //return EXIT_FAILURE;
     }
 
-    setDefaultTexture();
-    robotFacingDirection = RobotFacingDirection::FRONT;
-    holdingItem = false;
-    robotSprite.setScale(0.5, 0.5);
-    robotSprite.setPosition(0, 0);
+    setDefault();
 }
 
 void Robot::move(const RobotMovingDirection movingDirection) {

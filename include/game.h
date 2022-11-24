@@ -9,6 +9,7 @@
 #include "unordered_map"
 
 class Game {
+    using LevelItemMap = std::unordered_map<int, std::vector<Item*>>;
 public:
     // Constructors/Destructors
     Game();
@@ -27,14 +28,17 @@ private:
     sf::Vector2f mousePosView;
     // Game objects
     Robot robot;
-    std::vector<Item*> items;
-    std::unordered_map<Item*, Item*> itemMap;
+    LevelItemMap items;
+    std::unordered_map<int, Item*> itemMap;
+    sf::Font font;
     sf::Text text;
     // Game Board
     Board board;
     // Game state
     bool gameWon;
     int frame = 0;
+    int level = 1;
+    bool levelUp = false;
     // Functions
     void initWindow();
     void initItems();
@@ -48,6 +52,7 @@ private:
     bool shouldRobotMove(RobotMovingDirection movingDirection);
     bool shouldUpdateRobotPosition(RobotMovingDirection movingDirection);
     void mouseClicked();
+    void loadBackground();
 };
 
 #endif //ROBOTRPG_GAME_H

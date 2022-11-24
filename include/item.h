@@ -4,9 +4,10 @@
 #include <SFML/Graphics.hpp>
 
 enum class ItemType {
-    RED_SHRINE,
-    BLUE_RECTANGLE,
-    RED_SHRINE_COMPLETE,
+    SHRINE,
+    SHRINE_PIECE,
+    COMPLETED_SHRINE,
+    DECOY_PIECE
 };
 
 class Item {
@@ -35,11 +36,11 @@ private:
     std::string getTextureFile();
 };
 
-class ShrineObjectItem : public Item {
+class ShrinePieceItem : public Item {
 public:
     // Constructors/Destructors
-    ShrineObjectItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible);
-    virtual ~ShrineObjectItem() = default;
+    ShrinePieceItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible);
+    virtual ~ShrinePieceItem() = default;
 };
 
 class ShrineItem : public Item {
@@ -47,6 +48,13 @@ public:
     // Constructors/Destructors
     ShrineItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible);
     virtual ~ShrineItem() = default;
+};
+
+class DecoyItem : public Item {
+public:
+    // Constructors/Destructors
+    DecoyItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale);
+    virtual ~DecoyItem() = default;
 };
 
 #endif //ROBOTRPG_ITEM_H

@@ -10,12 +10,16 @@ Item::Item(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, b
     initSprite(scale);
 }
 
-ShrineObjectItem::ShrineObjectItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible) :
+ShrinePieceItem::ShrinePieceItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible) :
     Item(itemType, position, scale, visible, true) {
 }
 
 ShrineItem::ShrineItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale, bool visible) :
     Item(itemType, position, scale, visible, false) {
+}
+
+DecoyItem::DecoyItem(ItemType itemType, sf::Vector2f position, sf::Vector2<float> scale) :
+    Item(itemType, position, scale, true, false) {
 }
 
 ///////////////
@@ -60,11 +64,16 @@ void Item::initSprite(const sf::Vector2<float> scale) {
 
 std::string Item::getTextureFile() {
     switch (itemType) {
-        case ItemType::RED_SHRINE:
+        case ItemType::SHRINE:
             return "assets/red_shrine.png";
-        case ItemType::BLUE_RECTANGLE:
+        case ItemType::SHRINE_PIECE:
             return "assets/blue_rectangle.png";
-        case ItemType::RED_SHRINE_COMPLETE:
+        case ItemType::COMPLETED_SHRINE:
             return "assets/red_shrine_with_object.png";
+        case ItemType::DECOY_PIECE:
+            return "assets/blue_rectangle.png";
+        default:
+            std::cout << "UNKNOWN ITEM TYPE" << std::endl;
+            exit(1);
     }
 }

@@ -23,12 +23,13 @@ class Robot {
 public:
     // Getters
     sf::Sprite& getRobotSprite();
-    const bool isHoldingItem() const;
+    bool isHoldingItem() const;
     // Setters
     void holdItem(const bool isHoldingItem);
     // Functions
+    void setDefault();
+    void setWin();
     void setDefaultTexture();
-    void setWinTexture();
     RobotFacingDirection getCurrentFacingDirection();
     void updateFacingPosition(const RobotMovingDirection movingDirection);
     void updateRobotSprite();
